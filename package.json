@@ -1,0 +1,53 @@
+{
+  "name": "remix-auth-magic-link",
+  "version": "1.0.0",
+  "description": "A Remix Auth strategy to work with magic links",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/btomaj/remix-auth-magic-link"
+  },
+  "bugs": {
+    "url": "https://github.com/btomaj/remix-auth-magic-link/issues"
+  },
+  "keywords": [
+    "remix",
+    "remix-auth",
+    "auth",
+    "authentication",
+    "strategy",
+    "magic",
+    "link"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "quality": "biome check .",
+    "quality:fix": "biome check . --write --unsafe"
+  },
+  "sideEffects": false,
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "files": ["build", "package.json", "README.md"],
+  "exports": {
+    ".": "./build/index.js",
+    "./package.json": "./package.json"
+  },
+  "dependencies": {
+    "jose": "^6.0.10",
+    "remix-auth": "^4.1.0",
+    "vitest": "^3.0.8",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.8.3",
+    "@total-typescript/tsconfig": "^1.0.4",
+    "@types/node": "^22.13.10",
+    "typescript": "^5.8.2"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["@biomejs/biome", "esbuild"]
+  }
+}
