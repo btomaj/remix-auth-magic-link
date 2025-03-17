@@ -121,17 +121,16 @@ export async function loader({ request }: Route.LoaderArgs) {
 ## Advanced use cases
 
 ### Using SMS, or other channels
-You can collect any information from the form on the login route, and it will be passed to the function you defined for `MagicLinkStrategy`. You can collect SMS, or any other contact information, and use it to send the magic link.
+You can collect any information from the form on the login route, and it will be passed to the "verify" function that you defined for `MagicLinkStrategy`. You can collect SMS, or any other contact information, and use it to send the magic link.
 
 ### Post log-in redirect
-When you throw a redirect to the log in route from a restricted route, you can add a redirect query string parameter to the rediret URL containing the encoded URL of the restricted route. From the log in route, you can add the redirect URL in the form, append it to the magic link in your "verify" function, and when the user follows the magic link, redirect the user to the URL when authentication is complete.
+When you throw a redirect to the log-in route from a restricted route, you can add a redirect query string parameter to the rediret URL containing the encoded URL of the restricted route. From the log in route, you can add the redirect URL in the form, append it to the magic link in your "verify" function, and when the user follows the magic link, redirect the user to the URL when authentication is complete.
 
 ```tsx
 //  ~/auth.login.tsx
 
-export asycn function loader({ request }: Route.LoaderArgs) {
-  const redirectTo = new URL(request.url).searchParams.get("redirectTo");
-  return json({ redirectTo });
+export asycn function loader({ request, params }: Route.LoaderArgs) {
+  return json({ redirectTo: params.redirectTo });
 }
 
 export default function Login() {
@@ -173,10 +172,10 @@ authenticator.use(
 import { redirect } from "react-router";
 ...
 
-export async function loader({ request }: Route.LoaderArgs) {
-  const redirectTo = new URL(request.url).searchParams.get("redirectTo");
+export async function loader({ request, params }: Route.LoaderArgs) {
   ...
   const user = authenticator.authenticate("magic-link", new Request(authUrl, request));
+  const redirectTo = params.redirectTo;
 
   if (redirectTo) {
     throw redirect(redirectTo);
@@ -186,10 +185,10 @@ export async function loader({ request }: Route.LoaderArgs) {
 ```
 
 ### Single-use enforcement
-You can ensure that each magic link is only used once by deleting the temporary session that stores `key` in your "verify" function.
+In your "verify" function, you can ensure that each magic link is only used once by deleting the temporary session that stores `key`.
 
 ### Rate-limiting
 You can use libraries like [bottleneck](https://www.npmjs.com/package/bottleneck) and [limiter](https://www.npmjs.com/package/limiter) to rate limit the number of magic links that are generated.
 
 ### Concurrency checks
-You can prevent having more than one active magic link per user by storing the contact detail with the temporary session, and invalidating previous sessions when a user creates a new magic link for the same contact detail.
+You can prevent having more than one active magic link per user by storing the contact detail in the temporary session, and invalidating previous sessions when a user creates a new magic link for the same contact detail.
