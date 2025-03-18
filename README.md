@@ -82,7 +82,7 @@ Then, in your login route, you create a form to collect the user's contact detai
 
 ```tsx
 // ~/auth.login.tsx
-import authenticator from "~/auth/strategy.server";
+import { authenticator } from "~/auth/strategy.server";
 
 export async function action({ request }: Route.ActionArgs) {
   await authenticator.authenticate("magic-link", request);
@@ -93,7 +93,7 @@ export async function action({ request }: Route.ActionArgs) {
 export default function Login() {
   return (
     <Form method="post">
-      <label htmlFor="email">Contact detail</label>
+      <label htmlFor="contactDetail">Contact detail</label>
       <input type="input" name="contactDetail" id="contactDetail" required />
       <button type="submit">Send Magic Link</button>
     </Form>
@@ -105,7 +105,7 @@ When the user follows the magic link to your callback route, retrieve the key, a
 
 ```tsx
 // ~/auth.callback.tsx
-import authenticator from "~/auth/strategy.server";
+import { authenticator } from "~/auth/strategy.server";
 
 export async function loader({ request }: Route.LoaderArgs) {
   // 1. retrieve `key` from session
@@ -129,8 +129,10 @@ When you throw a redirect to the log-in route from a restricted route, you can a
 ```tsx
 //  ~/auth.login.tsx
 
-export asycn function loader({ request, params }: Route.LoaderArgs) {
-  return json({ redirectTo: params.redirectTo });
+export asycn function loader({ request }: Route.LoaderArgs) {
+  const redirectTo = new URL(request.url).searchParams.get("redirectTo");
+
+  return json({ redirectTo });
 }
 
 export default function Login() {
@@ -172,10 +174,10 @@ authenticator.use(
 import { redirect } from "react-router";
 ...
 
-export async function loader({ request, params }: Route.LoaderArgs) {
+export async function loader({ request }: Route.LoaderArgs) {
   ...
   const user = authenticator.authenticate("magic-link", new Request(authUrl, request));
-  const redirectTo = params.redirectTo;
+  const redirectTo = new URL(request.url).searchParams.get("redirectTo");
 
   if (redirectTo) {
     throw redirect(redirectTo);

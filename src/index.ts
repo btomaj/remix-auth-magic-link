@@ -1,7 +1,6 @@
 import crypto from "node:crypto";
 import { type JWTPayload, SignJWT, jwtVerify } from "jose";
 import { Strategy } from "remix-auth/strategy";
-import { z } from "zod";
 
 export class MagicLinkStrategy<User> extends Strategy<
   User,
